@@ -182,7 +182,7 @@ inline int Ro_add_event_timestamp(AAAMessage *msg, time_t now) {
     uint32_t ntime = htonl(now + EPOCH_UNIX_TO_EPOCH_NTP);
     memcpy(x, &ntime, sizeof (uint32_t));
 
-    return Ro_add_avp(msg, s.s, s.len, AVP_Event_Timestamp, AAA_AVP_FLAG_NONE, 0, AVP_DUPLICATE_DATA, __FUNCTION__);
+    return Ro_add_avp(msg, s.s, s.len, AVP_Event_Timestamp, AAA_AVP_FLAG_MANDATORY, 0, AVP_DUPLICATE_DATA, __FUNCTION__);
 
 }
 
