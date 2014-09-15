@@ -909,6 +909,8 @@ int Ro_Send_CCR(struct sip_msg *msg, str* direction, str* charge_type, str* unit
 
     int cc_event_number = 0;						//According to IOT tests this should start at 0
     int cc_event_type = RO_CC_START;
+    int subscription_id_type = AVP_EPC_Subscription_Id_Type_End_User_SIP_URI;
+    str subscription_id = { 0, 0 };
 
     //make sure we can get the dialog! if not, we can't continue
 	struct dlg_cell* dlg = dlgb.get_dlg(msg);
@@ -976,7 +978,17 @@ int Ro_Send_CCR(struct sip_msg *msg, str* direction, str* charge_type, str* unit
         goto error;
     }
 
-    if (!Ro_add_subscription_id(ccr, AVP_EPC_Subscription_Id_Type_End_User_SIP_URI, &asserted_id_uri)) {
+    if (asserted_id_uri.len > 3 && strncasecmp(asserted_id_uri.s,"tel:",4)==0) {
+        subscription_id_type = Subscription_Type_MSISDN;
+	subscription_id.s = asserted_id_uri.s + 4;
+	subscription_id.len = asserted_id_uri.len - 4;
+    } else {
+        subscription_id_type = Subscription_Type_IMPU;
+	subscription_id.s = asserted_id_uri.s;
+	subscription_id.len = asserted_id_uri.len;
+    }
+
+    if (!Ro_add_subscription_id(ccr, subscription_id_type, &subscription_id)) {
         LM_ERR("Problem adding Subscription ID data\n");
         goto error;
     }
