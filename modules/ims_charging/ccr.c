@@ -186,9 +186,10 @@ AAAMessage * Ro_write_CCR_avps(AAAMessage * ccr, Ro_CCR_t* x) {
 
     if (!ccr) return 0;
 
-    if (!cdp_avp->base.add_Origin_Host(&(ccr->avpList), x->origin_host, 0)) goto error;
+    // Only add origin_host if not empty, otherwise use CDP's base.
+    if (x->origin_host.len != 0 && !cdp_avp->base.add_Origin_Host(&(ccr->avpList), x->origin_host, 0)) goto error;
 
-    if (!cdp_avp->base.add_Origin_Realm(&(ccr->avpList), x->origin_realm, 0)) goto error;
+    if (x->origin_realm.len != 0 && !cdp_avp->base.add_Origin_Realm(&(ccr->avpList), x->origin_realm, 0)) goto error;
     if (!cdp_avp->base.add_Destination_Realm(&(ccr->avpList), x->destination_realm, 0)) goto error;
 
     if (!cdp_avp->base.add_Accounting_Record_Type(&(ccr->avpList), x->acct_record_type)) goto error;
