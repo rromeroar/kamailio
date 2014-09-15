@@ -161,7 +161,9 @@ int fix_parameters() {
 		LM_ERR("fix_parameters: not enough memory!\n");
 		return 0;
 	}
-	cfg.service_context_id->len = sprintf(cfg.service_context_id->s,
+	cfg.service_context_id->len = strlen(ro_service_context_id_ext_s) == 0 ?
+			sprintf(cfg.service_context_id->s, "%s", ro_service_context_id_root_s) :
+			sprintf(cfg.service_context_id->s,
 			"%s.%s.%s.%s.%s", ro_service_context_id_ext_s,
 			ro_service_context_id_mnc_s, ro_service_context_id_mcc_s,
 			ro_service_context_id_release_s, ro_service_context_id_root_s);
