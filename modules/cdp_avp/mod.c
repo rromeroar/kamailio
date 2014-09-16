@@ -163,6 +163,11 @@ cdp_avp_bind_t cdp_avp_bind={
 				#define CDP_AVP_INIT					
 					#include "epcapp.h"				
 				#undef	CDP_AVP_INIT				
+		},
+		{	/* symsoft */
+				#define CDP_AVP_INIT
+					#include "symsoft.h"
+				#undef CDP_AVP_INIT
 		}
 };
 

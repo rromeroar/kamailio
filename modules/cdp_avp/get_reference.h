@@ -66,4 +66,5 @@
 #include "ccapp.h"
 #include "imsapp.h"
 #include "epcapp.h"
+#include "symsoft.h"
 

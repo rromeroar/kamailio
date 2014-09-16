@@ -61,6 +61,7 @@
 #include "ccapp.h"
 #include "imsapp.h"
 #include "epcapp.h"
+#include "symsoft.h"
 
 #include "../../sr_module.h"
 
@@ -168,6 +169,13 @@ typedef struct {
 } cdp_avp_bind_epcapp_avp_t;
 
 typedef struct {
+
+	#define CDP_AVP_EXPORT
+		#include "symsoft.h"
+	#undef CDP_AVP_EXPORT
+} cdp_avp_bind_symsoft_avp_t;
+
+typedef struct {
 	struct cdp_binds				*cdp;
 	cdp_avp_bind_basic_t 			basic;
 	cdp_avp_bind_base_data_format_t data;
@@ -176,6 +184,7 @@ typedef struct {
 	cdp_avp_bind_nasapp_avp_t 		nasapp;
 	cdp_avp_bind_imsapp_avp_t 		imsapp;
 	cdp_avp_bind_epcapp_avp_t 		epcapp;
+	cdp_avp_bind_symsoft_avp_t		symsoft;
 } cdp_avp_bind_t;
 
 

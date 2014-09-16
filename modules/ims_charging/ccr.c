@@ -4,6 +4,7 @@
 #include "Ro_data.h"
 
 extern cdp_avp_bind_t *cdp_avp;
+extern struct cdp_binds cdpb;
 
 int Ro_write_event_type_avps(AAA_AVP_LIST * avp_list, event_type_t * x) {
     AAA_AVP_LIST aList = {0, 0};
@@ -184,6 +185,19 @@ error:
     return 0;
 }
 
+int Ro_write_voice_service_information_avps(AAA_AVP_LIST * avp_list, voice_service_information_t* x) {
+    AAA_AVP_LIST list = {0, 0};
+
+    if (!cdp_avp->symsoft.add_Traffic_Case(&list, x->traffic_case)) goto error;
+    if (!cdp_avp->symsoft.add_MSC_Address(&list, x->msc_address, 0)) goto error;
+    if (!cdp_avp->symsoft.add_Voice_Service_Information(avp_list, &list, AVP_FREE_DATA)) goto error;
+
+    return 1;
+error:
+    cdp_avp->cdp->AAAFreeAVPList(&list);
+    return 0;
+}
+
 AAAMessage * Ro_write_CCR_avps(AAAMessage * ccr, Ro_CCR_t* x) {
 
     if (!ccr) return 0;
@@ -215,6 +229,11 @@ AAAMessage * Ro_write_CCR_avps(AAAMessage * ccr, Ro_CCR_t* x) {
     if (x->service_information)
         if (!Ro_write_service_information_avps(&(ccr->avpList), x->service_information))
             goto error;
+
+    if (x->voice_service_information)
+	if (!Ro_write_voice_service_information_avps(&(ccr->avpList), x->voice_service_information))
+	    goto error;
+
     return ccr;
 error:
     cdp_avp->cdp->AAAFreeMessage(&ccr);
