@@ -1,7 +1,13 @@
 #ifndef __CLIENT_RO_CONFIG_H
 #define __CLIENT_RO_CONFIG_H
 
+typedef enum {
+    RO_MODE_3GPP = 0,
+    RO_MODE_SYMSOFT = 1
+} ro_ccr_mode_t;
+
 typedef struct {
+    ro_ccr_mode_t mode;
     str origin_host;
     str origin_realm;
     str destination_realm;

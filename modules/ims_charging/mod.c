@@ -22,6 +22,7 @@
 MODULE_VERSION
 
 /* parameters */
+int ro_ccr_mode = 0; // 3GPP
 char* ro_origin_host_s = "scscf.ims.smilecoms.com";
 char* ro_origin_realm_s = "ims.smilecoms.com";
 char* ro_destination_realm_s = "ims.smilecoms.com";
@@ -77,6 +78,7 @@ static cmd_export_t cmds[] = {
 };
 
 static param_export_t params[] = {
+		{ "ccr_mode",			INT_PARAM,			&ro_ccr_mode			},	
 		{ "hash_size", 				INT_PARAM,			&ro_session_hash_size 		},
 		{ "interim_update_credits",	INT_PARAM,			&interim_request_credits 	},
 		{ "timer_buffer", 			INT_PARAM,			&ro_timer_buffer 			},
@@ -133,6 +135,8 @@ struct module_exports exports = { MOD_NAME, DEFAULT_DLFLAGS, /* dlopen flags */
 };
 
 int fix_parameters() {
+	cfg.mode = (ro_ccr_mode_t)ro_ccr_mode;
+
 	cfg.origin_host.s = ro_origin_host_s;
 	cfg.origin_host.len = strlen(ro_origin_host_s);
 
@@ -161,6 +165,7 @@ int fix_parameters() {
 		LM_ERR("fix_parameters: not enough memory!\n");
 		return 0;
 	}
+	// FIXME: Use ccr_mode to select wether we should take svc_ctx_ext into account or not. (pruiz)
 	cfg.service_context_id->len = strlen(ro_service_context_id_ext_s) == 0 ?
 			sprintf(cfg.service_context_id->s, "%s", ro_service_context_id_root_s) :
 			sprintf(cfg.service_context_id->s,

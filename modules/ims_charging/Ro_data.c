@@ -160,12 +160,32 @@ out_of_memory:
     return 0;
 }
 
+voice_service_information_t * new_voice_service_information(ims_information_t * ims_info, subscription_id_t * subscription) {
+    voice_service_information_t * x = 0;
+    str dummy = STR_STATIC_INIT("dummy");
+
+    mem_new(x, sizeof (voice_service_information_t), pkg);
+    x->traffic_case = AVP_Traffic_Case_MO; // FIXME: Get it from a mod param?
+    str_dup(x->msc_address, dummy, pkg); // FIXME: Get it from a mod param?
+    str_dup(x->calling_party_number, (subscription->id), pkg);
+    str_dup(x->called_party_number, *(ims_info->called_party_address), pkg);
+    x->call_service_type = AVP_Call_Service_Type_Voice; // FIXME: Guess it from request's SDP
+
+    return x;
+
+out_of_memory:
+    LM_ERR("new voice service information: out of pkg memory\n");
+    voice_service_information_free(x);
+    return 0;
+}
+
 Ro_CCR_t * new_Ro_CCR(int32_t acc_record_type, str * user_name, ims_information_t * ims_info, subscription_id_t * subscription) {
 
 
     Ro_CCR_t *x = 0;
 
     service_information_t * service_info = 0;
+    voice_service_information_t * voice_service_info = 0;
 
     mem_new(x, sizeof (Ro_CCR_t), pkg);
 
@@ -181,12 +201,18 @@ Ro_CCR_t * new_Ro_CCR(int32_t acc_record_type, str * user_name, ims_information_
     if (cfg.service_context_id && cfg.service_context_id->s)
         str_dup_ptr(x->service_context_id, *(cfg.service_context_id), pkg);
 
-    if (ims_info)
+    if (cfg.mode == RO_MODE_3GPP && ims_info) {
         if (!(service_info = new_service_information(ims_info, subscription)))
             goto error;
+    } else if (cfg.mode == RO_MODE_SYMSOFT) {
+	if (!(voice_service_info = new_voice_service_information(ims_info, subscription)))
+	    goto error;
+    }
 
     x->service_information = service_info;
+    x->voice_service_information = voice_service_info;
     service_info = 0;
+    voice_service_info = 0;
 
     return x;
 
@@ -253,6 +279,14 @@ void service_information_free(service_information_t *x) {
     ims_information_free(x->ims_information);
 
     mem_free(x, pkg);
+}
+
+void voice_service_information_free(voice_service_information_t * x) {
+    if (!x) return;
+
+    str_free(x->msc_address, pkg);
+    str_free(x->called_party_number, pkg);
+    str_free(x->calling_party_number, pkg);
 }
 
 void Ro_free_CCR(Ro_CCR_t *x) {

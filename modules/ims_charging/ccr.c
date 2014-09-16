@@ -17,9 +17,11 @@ int Ro_write_event_type_avps(AAA_AVP_LIST * avp_list, event_type_t * x) {
         if (!cdp_avp->epcapp.add_Event(&aList, *(x->event), 0))
             goto error;
 
-    if (x->expires)
+    if (x->expires && ((int32_t)*(x->expires)) != -1) {
+        LM_INFO("Adding expires AVP: %u\n", *(x->expires));
         if (!cdp_avp->epcapp.add_Expires(avp_list, *(x->expires)))
             goto error;
+    }
 
     if (!cdp_avp->epcapp.add_Event_Type(avp_list, &aList, AVP_FREE_DATA))	//TODO: used to be DONT FREE
         goto error;

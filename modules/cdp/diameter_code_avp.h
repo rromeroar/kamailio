@@ -265,6 +265,22 @@ typedef enum {
 	AVP_MIP6_Agent_Info				  =  486, //RFC5447
 	
 	AVP_Service_Selection			  =  493, //RFC5778  
+
+	// SymSoft - DRA/OCS
+	AVP_Voice_Service_Information		= 12001,
+	AVP_Traffic_Case			= 12002,
+	AVP_Called_Party_Number			= 12003,
+	AVP_Original_Dialled_Number		= 12004,
+	AVP_Redirecting_Party_Number		= 12005,
+	AVP_Redirecting_Reason			= 12006,
+	AVP_Location_Information		= 12007,
+	AVP_Call_Reference_Number		= 12008,
+	AVP_Restricted_Number_Presentation	= 12009,
+	AVP_Call_Service_Type			= 12010,
+	AVP_MSC_Address				= 12012,
+	AVP_Service_Provider_Id			= 12013,
+	AVP_Calling_Party_Number		= 12014,
+	AVP_Call_Disconnect_Reason		= 12015,
 	
 }AAA_AVPCodeNr;
 
@@ -537,10 +553,6 @@ enum {
 	AVP_Accounting_Record_Type_Stop_Record		= 4,			
 };
 
-
-
-
-
 typedef enum {
         Permanent_Termination   = 0,
         New_Server_Assigned     = 1,
@@ -562,5 +574,19 @@ typedef enum {
 	AAA_ACCT_STOP = 4
 } AAAAcctMessageType;
 
+// SymSoft
+
+typedef enum {
+	AVP_Traffic_Case_MO	= 0,
+	AVP_Traffic_Case_MF	= 1,
+	AVP_Traffic_Case_MT	= 2
+} AVP_Traffic_Case_t;
+
+typedef enum {
+	AVP_Call_Service_Type_Voice 	= 0,
+	AVP_Call_Service_Type_Data	= 1,
+	AVP_Call_Service_Type_Fax	= 2,
+	AVP_Call_Service_Type_Video	= 3
+} AVP_Call_Service_Type_t;
 
 #endif /*DIAMETER_H_*/

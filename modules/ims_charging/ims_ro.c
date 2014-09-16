@@ -453,6 +453,7 @@ Ro_CCR_t * dlg_create_ro_session(struct sip_msg * req, struct sip_msg * reply, A
     if (!(time_stamps = new_time_stamps(&req_timestamp, NULL, &reply_timestamp, NULL)))
         goto error;
 
+// FIXME: Make this optional based on some module param. (pruiz)
     if (!(ims_info = new_ims_information(event_type, time_stamps, &callid, &callid, &from_uri, &to_uri, &icid, &orig_ioi, &term_ioi, dir)))
         goto error;
     event_type = 0;
