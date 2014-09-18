@@ -162,13 +162,15 @@ out_of_memory:
 
 voice_service_information_t * new_voice_service_information(ims_information_t * ims_info, subscription_id_t * subscription) {
     voice_service_information_t * x = 0;
-    str dummy = STR_STATIC_INIT("dummy");
+    str msc_address = STR_STATIC_INIT("dummy");
+    str called_party_number_address = STR_STATIC_INIT("34600112233");
 
     mem_new(x, sizeof (voice_service_information_t), pkg);
     x->traffic_case = AVP_Traffic_Case_MO; // FIXME: Get it from a mod param?
-    str_dup(x->msc_address, dummy, pkg); // FIXME: Get it from a mod param?
-    str_dup(x->calling_party_number, (subscription->id), pkg);
-    str_dup(x->called_party_number, *(ims_info->called_party_address), pkg);
+    str_dup(x->msc_address, msc_address, pkg);
+    x->called_party_number.number_plan = AVP_Number_Plan_MSISDN;
+    x->called_party_number.number_type = AVP_Number_Type_International;
+    str_dup(x->called_party_number.address_data, called_party_number_address, pkg);
     x->call_service_type = AVP_Call_Service_Type_Voice; // FIXME: Guess it from request's SDP
 
     return x;
@@ -281,12 +283,19 @@ void service_information_free(service_information_t *x) {
     mem_free(x, pkg);
 }
 
-void voice_service_information_free(voice_service_information_t * x) {
+void E164_number_free(E164_number_t *x) {
+    if (!x) return;
+
+    str_free(x->address_data, pkg);
+    mem_free(x, pkg);
+}
+
+void voice_service_information_free(voice_service_information_t *x) {
     if (!x) return;
 
     str_free(x->msc_address, pkg);
-    str_free(x->called_party_number, pkg);
-    str_free(x->calling_party_number, pkg);
+    str_free(x->called_party_number.address_data, pkg);
+    // TODO Complete with rest of fields after adding them
 }
 
 void Ro_free_CCR(Ro_CCR_t *x) {
@@ -304,6 +313,7 @@ void Ro_free_CCR(Ro_CCR_t *x) {
     str_free_ptr(x->service_context_id, pkg);
 
     service_information_free(x->service_information);
+    voice_service_information_free(x->voice_service_information);
 
     mem_free(x, pkg);
 }

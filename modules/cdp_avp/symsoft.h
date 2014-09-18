@@ -132,10 +132,15 @@
  */
 
 
-cdp_avp_add_ptr	(Voice_Service_Information,	0,	AAA_AVP_FLAG_MANDATORY,		Grouped,	AAA_AVP_LIST*)	
-cdp_avp_get	(Voice_Service_Information, 	0,	AAA_AVP_FLAG_MANDATORY,		Grouped,	AAA_AVP_LIST)	
-cdp_avp		(Traffic_Case,			0,	AAA_AVP_FLAG_MANDATORY,		Unsigned32,	uint32_t)
-cdp_avp_ptr	(MSC_Address,			0,	AAA_AVP_FLAG_MANDATORY, 	UTF8String, 	str)
+cdp_avp_add_ptr	(Voice_Service_Information,	0,			AAA_AVP_FLAG_MANDATORY,		Grouped,	AAA_AVP_LIST*)	
+cdp_avp_get	(Voice_Service_Information, 	0,			AAA_AVP_FLAG_MANDATORY,		Grouped,	AAA_AVP_LIST)	
+cdp_avp		(Traffic_Case,			0,			AAA_AVP_FLAG_MANDATORY,		Enumerated,	int32_t)
+cdp_avp_ptr	(MSC_Address,			0,			AAA_AVP_FLAG_MANDATORY, 	UTF8String, 	str)
+cdp_avp		(Number_Plan,			0,			AAA_AVP_FLAG_MANDATORY,		Enumerated,	int32_t)
+cdp_avp		(Number_Type,			0,			AAA_AVP_FLAG_MANDATORY,		Enumerated,	int32_t)
+cdp_avp_ptr	(EPC_Address_Data,		EPC_vendor_id_3GPP,	AAA_AVP_FLAG_MANDATORY,		UTF8String,	str)
+cdp_avp_add_ptr	(Called_Party_Number,		0,			AAA_AVP_FLAG_MANDATORY,		Grouped,	AAA_AVP_LIST*)
+cdp_avp		(Call_Service_Type,		0,			AAA_AVP_FLAG_MANDATORY,		Enumerated,	int32_t)
 
 /*
  * From here-on you can define/export/init/declare functions which can not be generate with the macros

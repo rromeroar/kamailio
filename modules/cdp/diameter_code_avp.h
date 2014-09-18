@@ -281,6 +281,8 @@ typedef enum {
 	AVP_Service_Provider_Id			= 12013,
 	AVP_Calling_Party_Number		= 12014,
 	AVP_Call_Disconnect_Reason		= 12015,
+	AVP_Number_Plan				= 12016,
+	AVP_Number_Type				= 12017,
 	
 }AAA_AVPCodeNr;
 
@@ -588,5 +590,23 @@ typedef enum {
 	AVP_Call_Service_Type_Fax	= 2,
 	AVP_Call_Service_Type_Video	= 3
 } AVP_Call_Service_Type_t;
+
+typedef enum {
+	AVP_Number_Plan_MSISDN		= 0
+} AVP_Number_Plan_t;
+
+typedef enum {
+	AVP_Number_Type_International	= 3
+} AVP_Number_Type_t;
+
+typedef enum {
+	AVP_Redirecting_Reason_Unknown				= 0,
+	AVP_Redirecting_Reason_User_Busy			= 1,
+	AVP_Redirecting_Reason_No_Reply				= 2,
+	AVP_Redirecting_Reason_Unconditional			= 3,
+	AVP_Redirecting_Reason_Deflection_During_Alert		= 4,
+	AVP_Redirecting_Reason_Deflection_Immediate_Response	= 5,
+	AVP_Redirecting_Reason_Mobile_Subscriber_Not_Available	= 6
+} AVP_Redirecting_Reason_t;
 
 #endif /*DIAMETER_H_*/

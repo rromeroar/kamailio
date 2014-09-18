@@ -333,13 +333,19 @@ typedef struct {
 } service_information_t;
 
 typedef struct {
+    AVP_Number_Plan_t number_plan;
+    AVP_Number_Type_t number_type;
+    str address_data;
+} E164_number_t;
+
+typedef struct {
     AVP_Traffic_Case_t traffic_case;
     str msc_address;
-    str called_party_number;
-    str calling_party_number;
-    str *original_dialled_number;
-    str *redirecting_party_number;
-    str *redirecting_reason;
+    E164_number_t called_party_number;
+    E164_number_t *calling_party_number;
+    E164_number_t *original_dialled_number;
+    E164_number_t *redirecting_party_number;
+    AVP_Redirecting_Reason_t *redirecting_reason;
     str *location_information;
     // TODO: str 3gpp_user_location_info;
     str *call_reference_number;
@@ -415,7 +421,8 @@ void event_type_free(event_type_t *x);
 void time_stamps_free(time_stamps_t *x);
 void ims_information_free(ims_information_t *x);
 void service_information_free(service_information_t *x);
-void voice_service_information_free(voice_service_information_t * x);
+void E164_number_free(E164_number_t *x);
+void voice_service_information_free(voice_service_information_t *x);
 
 Ro_CCR_t * new_Ro_CCR(int32_t acc_record_type, str * user_name, ims_information_t * ims_info, subscription_id_t * subscription);
 void Ro_free_CCR(Ro_CCR_t *x);
