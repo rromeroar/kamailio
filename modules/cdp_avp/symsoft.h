@@ -27,6 +27,7 @@
 
 #undef CDP_AVP_MODULE
 #define CDP_AVP_MODULE symsoft
+#define SYMSOFT_VENDOR_ID 12239
 
 #if !defined(CDP_AVP_DECLARATION) && !defined(CDP_AVP_EXPORT) && !defined(CDP_AVP_INIT) && !defined(CDP_AVP_REFERENCE)
 	#ifndef _CDP_AVP_SYMSOFT_H_1
@@ -132,15 +133,16 @@
  */
 
 
-cdp_avp_add_ptr	(Voice_Service_Information,	0,			AAA_AVP_FLAG_MANDATORY,		Grouped,	AAA_AVP_LIST*)	
-cdp_avp_get	(Voice_Service_Information, 	0,			AAA_AVP_FLAG_MANDATORY,		Grouped,	AAA_AVP_LIST)	
-cdp_avp		(Traffic_Case,			0,			AAA_AVP_FLAG_MANDATORY,		Enumerated,	int32_t)
-cdp_avp_ptr	(MSC_Address,			0,			AAA_AVP_FLAG_MANDATORY, 	UTF8String, 	str)
-cdp_avp		(Number_Plan,			0,			AAA_AVP_FLAG_MANDATORY,		Enumerated,	int32_t)
-cdp_avp		(Number_Type,			0,			AAA_AVP_FLAG_MANDATORY,		Enumerated,	int32_t)
+cdp_avp_add_ptr	(Voice_Service_Information,	SYMSOFT_VENDOR_ID,	AAA_AVP_FLAG_MANDATORY,		Grouped,	AAA_AVP_LIST*)	
+cdp_avp_get	(Voice_Service_Information, 	SYMSOFT_VENDOR_ID,	AAA_AVP_FLAG_MANDATORY,		Grouped,	AAA_AVP_LIST)	
+cdp_avp		(Traffic_Case,			SYMSOFT_VENDOR_ID,	AAA_AVP_FLAG_MANDATORY,		Enumerated,	int32_t)
+cdp_avp_ptr	(MSC_Address,			SYMSOFT_VENDOR_ID,	AAA_AVP_FLAG_MANDATORY, 	UTF8String, 	str)
+cdp_avp		(Number_Plan,			SYMSOFT_VENDOR_ID,	AAA_AVP_FLAG_MANDATORY,		Enumerated,	int32_t)
+cdp_avp		(Number_Type,			SYMSOFT_VENDOR_ID,	AAA_AVP_FLAG_MANDATORY,		Enumerated,	int32_t)
 cdp_avp_ptr	(EPC_Address_Data,		EPC_vendor_id_3GPP,	AAA_AVP_FLAG_MANDATORY,		UTF8String,	str)
-cdp_avp_add_ptr	(Called_Party_Number,		0,			AAA_AVP_FLAG_MANDATORY,		Grouped,	AAA_AVP_LIST*)
-cdp_avp		(Call_Service_Type,		0,			AAA_AVP_FLAG_MANDATORY,		Enumerated,	int32_t)
+cdp_avp_add_ptr	(Called_Party_Number,		SYMSOFT_VENDOR_ID,	AAA_AVP_FLAG_MANDATORY,		Grouped,	AAA_AVP_LIST*)
+cdp_avp_ptr	(Location_Information,		SYMSOFT_VENDOR_ID,	AAA_AVP_FLAG_VENDOR_SPECIFIC,	UTF8String,	str)
+cdp_avp		(Call_Service_Type,		SYMSOFT_VENDOR_ID,	AAA_AVP_FLAG_MANDATORY,		Enumerated,	int32_t)
 
 /*
  * From here-on you can define/export/init/declare functions which can not be generate with the macros
