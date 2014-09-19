@@ -215,6 +215,15 @@ inline int Ro_add_termination_cause(AAAMessage *msg, unsigned int term_code) {
     return Ro_add_avp(msg, s.s, s.len, AVP_Termination_Cause, AAA_AVP_FLAG_MANDATORY, 0, AVP_DUPLICATE_DATA, __FUNCTION__);
 }
 
+inline int Ro_add_call_disconnect_reason(AAAMessage *msg, AVP_Call_Disconnect_Reason_t call_disconnect_reason) {
+    char x[4];
+    str s = {x, 4};
+    uint32_t reason = htonl(call_disconnect_reason);
+
+    memcpy(x, &reason, sizeof (uint32_t));
+    return Ro_add_avp(msg, s.s, s.len, AVP_Call_Disconnect_Reason, AAA_AVP_FLAG_MANDATORY, SYMSOFT_VENDOR_ID, AVP_DUPLICATE_DATA, __FUNCTION__);
+}
+
 /* called only when building stop record AVPS */
 inline int Ro_add_multiple_service_credit_Control_stop(AAAMessage *msg, int used_unit) {
     AAA_AVP_LIST used_list, mscc_list;
@@ -559,10 +568,16 @@ void send_ccr_interim(struct ro_session* ro_session, unsigned int used, unsigned
 
     event_type = 0;
 
-    subscr.type = Subscription_Type_IMPU;
     //TODO: need to check which direction. for ORIG we use from_uri. for TERM we use to_uri
-    subscr.id.s = ro_session->from_uri.s;
-    subscr.id.len = ro_session->from_uri.len;
+    if (ro_session->from_uri.len > 3 && strncasecmp(ro_session->from_uri.s, "tel:", 4) == 0) {
+        subscr.type = Subscription_Type_MSISDN;
+        subscr.id.s = ro_session->from_uri.s + 4;
+        subscr.id.len = ro_session->from_uri.len - 4;
+    } else {
+        subscr.type = Subscription_Type_IMPU;
+        subscr.id.s = ro_session->from_uri.s;
+        subscr.id.len = ro_session->from_uri.len;
+    }
 
     acc_record_type = AAA_ACCT_INTERIM;
 
@@ -609,7 +624,7 @@ void send_ccr_interim(struct ro_session* ro_session, unsigned int used, unsigned
         LM_ERR("Problem adding User-Equipment data\n");
     }
 
-    if (!Ro_add_subscription_id(ccr, AVP_EPC_Subscription_Id_Type_End_User_SIP_URI, &(subscr.id))) {
+    if (!Ro_add_subscription_id(ccr, subscr.type, &(subscr.id))) {
         LM_ERR("Problem adding Subscription ID data\n");
     }
 
@@ -760,8 +775,15 @@ void send_ccr_stop(struct ro_session *ro_session) {
     
     event_type = 0;
 
-    subscr.type = Subscription_Type_IMPU;
-    subscr.id = ro_session->from_uri;
+    if (ro_session->from_uri.len > 3 && strncasecmp(ro_session->from_uri.s, "tel:", 4) == 0) {
+        subscr.type = Subscription_Type_MSISDN;
+        subscr.id.s = ro_session->from_uri.s + 4;
+        subscr.id.len = ro_session->from_uri.len - 4;
+    } else {
+        subscr.type = Subscription_Type_IMPU;
+        subscr.id.s = ro_session->from_uri.s;
+        subscr.id.len = ro_session->from_uri.len;
+    }
 
     acc_record_type = AAA_ACCT_STOP;
 
@@ -807,7 +829,7 @@ void send_ccr_stop(struct ro_session *ro_session) {
         LM_ERR("Problem adding User-Equipment data\n");
     }
     
-    if (!Ro_add_subscription_id(ccr, AVP_EPC_Subscription_Id_Type_End_User_SIP_URI, &ro_session->from_uri)) {
+    if (!Ro_add_subscription_id(ccr, subscr.type, &subscr.id)) {
         LM_ERR("Problem adding Subscription ID data\n");
     }
     
@@ -817,6 +839,10 @@ void send_ccr_stop(struct ro_session *ro_session) {
     
     if (!Ro_add_termination_cause(ccr, TERM_CAUSE_LOGOUT)) {
         LM_ERR("problem add Termination cause AVP to STOP record.\n");
+    }
+
+    if (cfg.mode == RO_MODE_SYMSOFT && !Ro_add_call_disconnect_reason(ccr, AVP_Call_Disconnect_Reason_Abandon)) {
+        LM_ERR("Problem adding Call-Disconnect-Reason data\n");
     }
 
     cdpb.AAASessionsUnlock(auth->hash);

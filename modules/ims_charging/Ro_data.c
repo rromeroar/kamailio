@@ -163,7 +163,8 @@ out_of_memory:
 voice_service_information_t * new_voice_service_information(ims_information_t * ims_info, subscription_id_t * subscription) {
     voice_service_information_t * x = 0;
     str msc_address = STR_STATIC_INIT("dummy");
-    str called_party_number_address = STR_STATIC_INIT("34600112233");
+    str called_party_number_address = STR_STATIC_INIT("543801234567");
+    str location_information = STR_STATIC_INIT("543801234567");
 
     mem_new(x, sizeof (voice_service_information_t), pkg);
     x->traffic_case = AVP_Traffic_Case_MO; // FIXME: Get it from a mod param?
@@ -171,6 +172,7 @@ voice_service_information_t * new_voice_service_information(ims_information_t * 
     x->called_party_number.number_plan = AVP_Number_Plan_MSISDN;
     x->called_party_number.number_type = AVP_Number_Type_International;
     str_dup(x->called_party_number.address_data, called_party_number_address, pkg);
+    str_dup_ptr(x->location_information, location_information, pkg);
     x->call_service_type = AVP_Call_Service_Type_Voice; // FIXME: Guess it from request's SDP
 
     return x;
@@ -295,6 +297,9 @@ void voice_service_information_free(voice_service_information_t *x) {
 
     str_free(x->msc_address, pkg);
     str_free(x->called_party_number.address_data, pkg);
+    if (x->location_information) {
+        str_free_ptr(x->location_information, pkg);
+    }
     // TODO Complete with rest of fields after adding them
 }
 

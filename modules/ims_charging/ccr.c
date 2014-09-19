@@ -196,6 +196,7 @@ int Ro_write_voice_service_information_avps(AAA_AVP_LIST * avp_list, voice_servi
     if (!cdp_avp->symsoft.add_Traffic_Case(&list, x->traffic_case)) goto error;
     if (!cdp_avp->symsoft.add_MSC_Address(&list, x->msc_address, 0)) goto error;
     if (!cdp_avp->symsoft.add_Called_Party_Number(&list, &called_party_number_list, AVP_FREE_DATA)) goto error;
+    if (!cdp_avp->symsoft.add_Location_Information(&list, *x->location_information, 0)) goto error;
     if (!cdp_avp->symsoft.add_Call_Service_Type(&list, x->call_service_type)) goto error;
     if (!cdp_avp->symsoft.add_Voice_Service_Information(avp_list, &list, AVP_FREE_DATA)) goto error;
 

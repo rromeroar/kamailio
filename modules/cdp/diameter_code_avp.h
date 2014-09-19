@@ -609,4 +609,16 @@ typedef enum {
 	AVP_Redirecting_Reason_Mobile_Subscriber_Not_Available	= 6
 } AVP_Redirecting_Reason_t;
 
+typedef enum {
+	AVP_Call_Disconnect_Reason_Unspecified			= 0,
+	AVP_Call_Disconnect_Reason_Abandon			= 1,
+	AVP_Call_Disconnect_Reason_Route_Select_Failure		= 2,
+	AVP_Call_Disconnect_Reason_Busy				= 3,
+	AVP_Call_Disconnect_Reason_No_Answer			= 4,
+	AVP_Call_Disconnect_Reason_Not_Reachable		= 5,
+	AVP_Call_Disconnect_Reason_Calling_Party_Disconnect	= 6,
+	AVP_Call_Disconnect_Reason_Called_Party_Disconnect	= 7,
+	AVP_Call_Disconnect_Reason_Service_Release		= 8
+} AVP_Call_Disconnect_Reason_t;
+
 #endif /*DIAMETER_H_*/
