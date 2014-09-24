@@ -1,10 +1,12 @@
 #include "../cdp_avp/mod_export.h"
 
 #include "ccr.h"
+#include "config.h"
 #include "Ro_data.h"
 
 extern cdp_avp_bind_t *cdp_avp;
 extern struct cdp_binds cdpb;
+extern client_ro_cfg cfg;
 
 int Ro_write_event_type_avps(AAA_AVP_LIST * avp_list, event_type_t * x) {
     AAA_AVP_LIST aList = {0, 0};
@@ -239,8 +241,8 @@ AAAMessage * Ro_write_CCR_avps(AAAMessage * ccr, Ro_CCR_t* x) {
             goto error;
 
     if (x->voice_service_information)
-	if (!Ro_write_voice_service_information_avps(&(ccr->avpList), x->voice_service_information))
-	    goto error;
+        if (!Ro_write_voice_service_information_avps(&(ccr->avpList), x->voice_service_information))
+            goto error;
 
     return ccr;
 error:
@@ -278,6 +280,7 @@ Ro_CCA_t *Ro_parse_CCA_avps(AAAMessage *cca) {
     mscc->final_unit_action = fui;
 
     mscc->final_unit_action->action = -1;
+    mscc->validity_time = cfg.default_validity_time;
 
     AAA_AVP_LIST* avp_list = &cca->avpList;
     AAA_AVP_LIST mscc_avp_list;

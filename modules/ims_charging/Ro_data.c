@@ -163,8 +163,8 @@ out_of_memory:
 voice_service_information_t * new_voice_service_information(ims_information_t * ims_info, subscription_id_t * subscription) {
     voice_service_information_t * x = 0;
     str msc_address = STR_STATIC_INIT("dummy");
-    str called_party_number_address = STR_STATIC_INIT("543801234567");
-    str location_information = STR_STATIC_INIT("543801234567");
+    str called_party_number_address = STR_STATIC_INIT("541180001234");
+    str location_information = STR_STATIC_INIT("54381000000");
 
     mem_new(x, sizeof (voice_service_information_t), pkg);
     x->traffic_case = AVP_Traffic_Case_MO; // FIXME: Get it from a mod param?

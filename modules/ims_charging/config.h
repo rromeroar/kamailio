@@ -8,6 +8,7 @@ typedef enum {
 
 typedef struct {
     ro_ccr_mode_t mode;
+    uint32_t default_validity_time;
     str origin_host;
     str origin_realm;
     str destination_realm;

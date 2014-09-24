@@ -347,10 +347,10 @@ enum  {
 	AVP_Redirect_Address_Type_SIP_URI		= 3
 };
 
-enum  {
+typedef enum  {
 	AVP_Multiple_Services_Indicator_Multiple_Services_Not_Supported	= 0,
 	AVP_Multiple_Services_Indicator_Multiple_Services_Supported		= 1,
-};
+} AVP_Multiple_Services_Indicator_t;
 
 enum  {
 	AVP_Redirect_Action_Direct_Debiting	= 0,

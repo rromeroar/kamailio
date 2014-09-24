@@ -35,6 +35,7 @@ char* ro_service_context_id_release_s = "8";
 static int ro_session_hash_size = 4096;
 int ro_timer_buffer = 5;
 int interim_request_credits = 30;
+int default_validity_time = 0;
 client_ro_cfg cfg;
 
 struct cdp_binds cdpb;
@@ -78,9 +79,10 @@ static cmd_export_t cmds[] = {
 };
 
 static param_export_t params[] = {
-		{ "ccr_mode",			INT_PARAM,			&ro_ccr_mode			},	
+		{ "ccr_mode",			INT_PARAM,			&ro_ccr_mode			},
 		{ "hash_size", 				INT_PARAM,			&ro_session_hash_size 		},
 		{ "interim_update_credits",	INT_PARAM,			&interim_request_credits 	},
+		{ "default_validity_time",	INT_PARAM,			&default_validity_time		},
 		{ "timer_buffer", 			INT_PARAM,			&ro_timer_buffer 			},
 		{ "ro_forced_peer", 		STR_PARAM, 			&ro_forced_peer.s 			},
 		{ "ro_auth_expiry",			INT_PARAM, 			&ro_auth_expiry 			},
@@ -136,6 +138,7 @@ struct module_exports exports = { MOD_NAME, DEFAULT_DLFLAGS, /* dlopen flags */
 
 int fix_parameters() {
 	cfg.mode = (ro_ccr_mode_t)ro_ccr_mode;
+	cfg.default_validity_time = default_validity_time;
 
 	cfg.origin_host.s = ro_origin_host_s;
 	cfg.origin_host.len = strlen(ro_origin_host_s);

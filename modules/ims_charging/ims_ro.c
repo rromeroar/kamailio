@@ -293,6 +293,15 @@ inline int Ro_add_multiple_service_credit_Control(AAAMessage *msg, unsigned int 
     return Ro_add_avp(msg, group.s, group.len, AVP_Multiple_Services_Credit_Control, AAA_AVP_FLAG_MANDATORY, 0, AVP_FREE_DATA, __FUNCTION__);
 }
 
+inline int Ro_add_multiple_services_indicator(AAAMessage *msg, AVP_Multiple_Services_Indicator_t indicator_value) {
+    char x[4];
+    str s = {x, 4};
+    uint32_t value = htonl(indicator_value);
+    memcpy(x, &value, sizeof (uint32_t));
+
+    return Ro_add_avp(msg, s.s, s.len, AVP_Multiple_Services_Indicator, AAA_AVP_FLAG_MANDATORY, 0, AVP_DUPLICATE_DATA, __FUNCTION__);
+}
+
 inline int Ro_add_subscription_id(AAAMessage *msg, unsigned int type, str *subscription_id)//, struct sip_msg* sip_msg)
 {
     AAA_AVP_LIST list;
@@ -628,6 +637,10 @@ void send_ccr_interim(struct ro_session* ro_session, unsigned int used, unsigned
         LM_ERR("Problem adding Subscription ID data\n");
     }
 
+    if (!Ro_add_multiple_services_indicator(ccr, AVP_Multiple_Services_Indicator_Multiple_Services_Supported)) {
+        LM_ERR("Problem adding Multiple-Services-Indicator data\n");
+    }
+
     if (!Ro_add_multiple_service_credit_Control(ccr, interim_request_credits/*INTERIM_CREDIT_REQ_AMOUNT*/, used)) {
         LM_ERR("Problem adding Multiple Service Credit Control data\n");
     }
@@ -832,6 +845,10 @@ void send_ccr_stop(struct ro_session *ro_session) {
     if (!Ro_add_subscription_id(ccr, subscr.type, &subscr.id)) {
         LM_ERR("Problem adding Subscription ID data\n");
     }
+
+    if (!Ro_add_multiple_services_indicator(ccr, AVP_Multiple_Services_Indicator_Multiple_Services_Supported)) {
+        LM_ERR("Problem adding Multiple-Services-Indicator data\n");
+    }
     
     if (!Ro_add_multiple_service_credit_Control_stop(ccr, used)) {
         LM_ERR("Problem adding Multiple Service Credit Control data\n");
@@ -1019,6 +1036,11 @@ int Ro_Send_CCR(struct sip_msg *msg, str* direction, str* charge_type, str* unit
         LM_ERR("Problem adding Subscription ID data\n");
         goto error;
     }
+
+    if (!Ro_add_multiple_services_indicator(ccr, AVP_Multiple_Services_Indicator_Multiple_Services_Supported)) {
+        LM_ERR("Problem adding Multiple-Services-Indicator data\n");
+    }
+
     if (!Ro_add_multiple_service_credit_Control(ccr, reservation_units, -1)) {
         LM_ERR("Problem adding Multiple Service Credit Control data\n");
         goto error;
