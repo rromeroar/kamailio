@@ -858,7 +858,7 @@ void send_ccr_stop(struct ro_session *ro_session) {
         LM_ERR("problem add Termination cause AVP to STOP record.\n");
     }
 
-    if (cfg.mode == RO_MODE_SYMSOFT && !Ro_add_call_disconnect_reason(ccr, AVP_Call_Disconnect_Reason_Abandon)) {
+    if (cfg.mode == RO_MODE_SYMSOFT && !Ro_add_call_disconnect_reason(ccr, ro_session->end_reason)) {
         LM_ERR("Problem adding Call-Disconnect-Reason data\n");
     }
 

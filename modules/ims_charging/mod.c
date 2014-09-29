@@ -79,7 +79,7 @@ static cmd_export_t cmds[] = {
 };
 
 static param_export_t params[] = {
-		{ "ccr_mode",			INT_PARAM,			&ro_ccr_mode			},
+		{ "ccr_mode",				INT_PARAM,			&ro_ccr_mode				},
 		{ "hash_size", 				INT_PARAM,			&ro_session_hash_size 		},
 		{ "interim_update_credits",	INT_PARAM,			&interim_request_credits 	},
 		{ "default_validity_time",	INT_PARAM,			&default_validity_time		},

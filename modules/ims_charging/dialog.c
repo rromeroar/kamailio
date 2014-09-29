@@ -1,7 +1,43 @@
 #include "dialog.h"
 #include "ro_session_hash.h"
+#include "config.h"
+
+extern client_ro_cfg cfg;
 
 struct cdp_binds cdpb;
+
+inline unsigned int get_end_reason_symsoft(struct dlg_cb_params *_params) {
+	int request_method = _params->req ? _params->req->REQ_METHOD : METHOD_UNDEF;
+	unsigned int reply_status = _params->rpl ? _params->rpl->REPLY_STATUS : 0;
+	AVP_Call_Disconnect_Reason_t end_reason = AVP_Call_Disconnect_Reason_Unspecified;
+
+	if (request_method == METHOD_INVITE) {
+		if (reply_status == 486) {
+			end_reason = AVP_Call_Disconnect_Reason_Busy;
+		} else if (reply_status == 487) {
+			end_reason = AVP_Call_Disconnect_Reason_Abandon;
+		}
+	} else if (request_method == METHOD_BYE) {
+		if (_params->direction == DLG_DIR_DOWNSTREAM) {
+			end_reason = AVP_Call_Disconnect_Reason_Calling_Party_Disconnect;
+		} else if (_params->direction == DLG_DIR_UPSTREAM) {
+			end_reason = AVP_Call_Disconnect_Reason_Called_Party_Disconnect;
+		}
+	}
+
+	return end_reason;
+}
+
+inline unsigned int get_end_reason(struct dlg_cb_params *_params) {
+	unsigned int end_reason;
+
+	if (cfg.mode == RO_MODE_SYMSOFT) {
+		end_reason = get_end_reason_symsoft(_params);
+	}
+
+	return end_reason;
+}
+
 
 void dlg_reply(struct dlg_cell *dlg, int type, struct dlg_cb_params *_params) {
 	struct sip_msg *reply = _params->rpl;
@@ -150,8 +186,11 @@ void dlg_terminated(struct dlg_cell *dlg, int type, struct dlg_cb_params *_param
 				}
 
 				LM_DBG("Sending CCR STOP on Ro_Session [%p]\n", ro_session);
+
+				ro_session->end_reason = get_end_reason(_params);
 				send_ccr_stop(ro_session);
 				ro_session->active = 0;
+
 				//ro_session->start_time;
 				unref_ro_session_unsafe(ro_session, 2+unref, ro_session_entry); //lock already acquired
 				ro_session_unlock(ro_session_table, ro_session_entry);

@@ -47,6 +47,7 @@ struct ro_session {
     int auth_appid;
     int auth_session_type;
     int active;
+    unsigned int end_reason;
 
     struct diameter_avp_value avp_value;
 };

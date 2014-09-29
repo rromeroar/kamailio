@@ -585,14 +585,14 @@ typedef enum {
 } AVP_Traffic_Case_t;
 
 typedef enum {
-	AVP_Call_Service_Type_Voice 	= 0,
+	AVP_Call_Service_Type_Voice	= 0,
 	AVP_Call_Service_Type_Data	= 1,
 	AVP_Call_Service_Type_Fax	= 2,
 	AVP_Call_Service_Type_Video	= 3
 } AVP_Call_Service_Type_t;
 
 typedef enum {
-	AVP_Number_Plan_MSISDN		= 0
+	AVP_Number_Plan_MSISDN	= 0
 } AVP_Number_Plan_t;
 
 typedef enum {
@@ -600,25 +600,25 @@ typedef enum {
 } AVP_Number_Type_t;
 
 typedef enum {
-	AVP_Redirecting_Reason_Unknown				= 0,
-	AVP_Redirecting_Reason_User_Busy			= 1,
-	AVP_Redirecting_Reason_No_Reply				= 2,
-	AVP_Redirecting_Reason_Unconditional			= 3,
-	AVP_Redirecting_Reason_Deflection_During_Alert		= 4,
+	AVP_Redirecting_Reason_Unknown							= 0,
+	AVP_Redirecting_Reason_User_Busy						= 1,
+	AVP_Redirecting_Reason_No_Reply							= 2,
+	AVP_Redirecting_Reason_Unconditional					= 3,
+	AVP_Redirecting_Reason_Deflection_During_Alert			= 4,
 	AVP_Redirecting_Reason_Deflection_Immediate_Response	= 5,
 	AVP_Redirecting_Reason_Mobile_Subscriber_Not_Available	= 6
 } AVP_Redirecting_Reason_t;
 
 typedef enum {
-	AVP_Call_Disconnect_Reason_Unspecified			= 0,
-	AVP_Call_Disconnect_Reason_Abandon			= 1,
+	AVP_Call_Disconnect_Reason_Unspecified				= 0,
+	AVP_Call_Disconnect_Reason_Abandon					= 1,
 	AVP_Call_Disconnect_Reason_Route_Select_Failure		= 2,
-	AVP_Call_Disconnect_Reason_Busy				= 3,
-	AVP_Call_Disconnect_Reason_No_Answer			= 4,
-	AVP_Call_Disconnect_Reason_Not_Reachable		= 5,
+	AVP_Call_Disconnect_Reason_Busy						= 3,
+	AVP_Call_Disconnect_Reason_No_Answer				= 4,
+	AVP_Call_Disconnect_Reason_Not_Reachable			= 5,
 	AVP_Call_Disconnect_Reason_Calling_Party_Disconnect	= 6,
 	AVP_Call_Disconnect_Reason_Called_Party_Disconnect	= 7,
-	AVP_Call_Disconnect_Reason_Service_Release		= 8
+	AVP_Call_Disconnect_Reason_Service_Release			= 8
 } AVP_Call_Disconnect_Reason_t;
 
 #endif /*DIAMETER_H_*/
