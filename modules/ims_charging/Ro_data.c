@@ -31,6 +31,38 @@ do {\
 
 extern client_ro_cfg cfg;
 
+
+/**
+ * Gets the username part of a sip_uri
+ * @param sip_uri - the SIP URI
+ * @returns str with the username, or NULL in case of error
+ */
+str * get_username_from_sip_uri(str * sip_uri) {
+    str * username;
+
+    if (sip_uri == NULL) {
+        LM_ERR("sip_uri is NULL\n");
+    } else if (sip_uri->len < 4 || strncmp(sip_uri->s, "sip:", 4) != 0) {
+        LM_ERR("sip_uri is not a valid SIP URI\n");
+    } else {
+        char * username_start = sip_uri->s + 4;
+        char * username_end = memchr(username_start, '@', sip_uri->len - 4);
+
+        if (username_end == NULL) {
+            LM_ERR("sip_uri is not a valid SIP URI\n");
+        } else {
+            str x = {username_start, username_end - username_start};
+            str_dup_ptr(username, x, pkg);
+        }
+    }
+
+    return username;
+
+out_of_memory:
+    LM_ERR("out of pkg memory\n");
+    return NULL;
+}
+
 event_type_t * new_event_type(str * sip_method, str * event, uint32_t * expires) {
     event_type_t * x = 0;
 
@@ -163,22 +195,25 @@ out_of_memory:
 voice_service_information_t * new_voice_service_information(ims_information_t * ims_info, subscription_id_t * subscription) {
     voice_service_information_t * x = 0;
     str msc_address = STR_STATIC_INIT("dummy");
-    str called_party_number_address = STR_STATIC_INIT("541180001234");
-    str location_information = STR_STATIC_INIT("54381000000");
 
     mem_new(x, sizeof (voice_service_information_t), pkg);
+
     x->traffic_case = AVP_Traffic_Case_MO;
     str_dup(x->msc_address, msc_address, pkg);
+
+    if ((x->location_information = get_username_from_sip_uri(ims_info->called_party_address)) == NULL)
+        goto error;
+
     x->called_party_number.number_plan = AVP_Number_Plan_MSISDN;
     x->called_party_number.number_type = AVP_Number_Type_International;
-    str_dup(x->called_party_number.address_data, called_party_number_address, pkg);
-    str_dup_ptr(x->location_information, location_information, pkg);
+    str_dup(x->called_party_number.address_data, *(x->location_information), pkg);
     x->call_service_type = AVP_Call_Service_Type_Voice;
 
     return x;
 
 out_of_memory:
     LM_ERR("new voice service information: out of pkg memory\n");
+error:
     voice_service_information_free(x);
     return 0;
 }
@@ -208,9 +243,9 @@ Ro_CCR_t * new_Ro_CCR(int32_t acc_record_type, str * user_name, ims_information_
     if (cfg.mode == RO_MODE_3GPP && ims_info) {
         if (!(service_info = new_service_information(ims_info, subscription)))
             goto error;
-    } else if (cfg.mode == RO_MODE_SYMSOFT) {
-	if (!(voice_service_info = new_voice_service_information(ims_info, subscription)))
-	    goto error;
+    } else if (cfg.mode == RO_MODE_SYMSOFT && ims_info) {
+        if (!(voice_service_info = new_voice_service_information(ims_info, subscription)))
+            goto error;
     }
 
     x->service_information = service_info;
@@ -225,6 +260,7 @@ out_of_memory:
 error:
     Ro_free_CCR(x);
     service_information_free(service_info);
+    voice_service_information_free(voice_service_info);
 
     return 0;
 }
@@ -297,10 +333,9 @@ void voice_service_information_free(voice_service_information_t *x) {
 
     str_free(x->msc_address, pkg);
     str_free(x->called_party_number.address_data, pkg);
-    if (x->location_information) {
-        str_free_ptr(x->location_information, pkg);
-    }
-    // TODO Complete with rest of fields after adding them
+    str_free_ptr(x->location_information, pkg);
+
+    mem_free(x, pkg);
 }
 
 void Ro_free_CCR(Ro_CCR_t *x) {
