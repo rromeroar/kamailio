@@ -27,6 +27,8 @@ char* ro_origin_host_s = "scscf.ims.smilecoms.com";
 char* ro_origin_realm_s = "ims.smilecoms.com";
 char* ro_destination_realm_s = "ims.smilecoms.com";
 char* ro_destination_host_s = "hss.ims.smilecoms.com";
+char* ro_msc_address_s = 0;
+char* ro_vlr_location_s = 0;
 char* ro_service_context_id_root_s = "32260@3gpp.org";
 char* ro_service_context_id_ext_s = "ext";
 char* ro_service_context_id_mnc_s = "01";
@@ -96,6 +98,8 @@ static param_export_t params[] = {
 		{ "origin_realm", 			STR_PARAM,			&ro_origin_realm_s 			},
 		{ "destination_realm", 		STR_PARAM,			&ro_destination_realm_s 	},
 		{ "destination_host", 		STR_PARAM,			&ro_destination_host_s 		},
+		{ "msc_address",			STR_PARAM,			&ro_msc_address_s				},
+		{ "vlr_location",			STR_PARAM,			&ro_vlr_location_s				},
 		{ "service_context_id_root",STR_PARAM,			&ro_service_context_id_root_s 	},
 		{ "service_context_id_ext", STR_PARAM,			&ro_service_context_id_ext_s 	},
 		{ "service_context_id_mnc", STR_PARAM,			&ro_service_context_id_mnc_s 	},
@@ -136,6 +140,22 @@ struct module_exports exports = { MOD_NAME, DEFAULT_DLFLAGS, /* dlopen flags */
 		mod_child_init 	/* per-child init function */
 };
 
+int fix_parameters_symsoft() {
+	if (!ro_msc_address_s) {
+		LM_ERR("fix_parameters: msc_address param is mandatory for SYMSOFT mode\n");
+		return 0;
+	}
+	cfg.msc_address.s = ro_msc_address_s;
+	cfg.msc_address.len = strlen(ro_msc_address_s);
+
+	if (!ro_vlr_location_s) {
+		LM_ERR("fix_parameters: vlr_location param is mandatory for SYMSOFT mode\n");
+		return 0;
+	}
+	cfg.vlr_location.s = ro_vlr_location_s;
+	cfg.vlr_location.len = strlen(ro_vlr_location_s);
+}
+
 int fix_parameters() {
 	cfg.mode = (ro_ccr_mode_t)ro_ccr_mode;
 	cfg.default_validity_time = default_validity_time;
@@ -151,6 +171,11 @@ int fix_parameters() {
 
 	cfg.destination_host.s = ro_destination_host_s;
 	cfg.destination_host.len = strlen(ro_destination_host_s);
+
+	if (cfg.mode == RO_MODE_SYMSOFT && !fix_parameters_symsoft()) {
+		LM_ERR("unable to set SYMSOFT parameters correctly\n");
+		return 0;
+	}
 
 	cfg.service_context_id = shm_malloc(sizeof(str));
 	if (!cfg.service_context_id) {

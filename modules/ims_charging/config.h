@@ -13,6 +13,8 @@ typedef struct {
     str origin_realm;
     str destination_realm;
     str destination_host;
+    str msc_address;
+    str vlr_location;
     str * service_context_id;
 } client_ro_cfg;
 
