@@ -38,6 +38,12 @@ static int ro_session_hash_size = 4096;
 int ro_timer_buffer = 5;
 int interim_request_credits = 30;
 int default_validity_time = 0;
+int service_parameter_type_caller = 0;
+int service_parameter_type_called = 0;
+int service_parameter_type_mtmo = 0;
+int service_parameter_type_location_type = 0;
+int service_parameter_type_location = 0;
+int service_parameter_type_routing_case = 0;
 client_ro_cfg cfg;
 
 struct cdp_binds cdpb;
@@ -105,7 +111,13 @@ static param_export_t params[] = {
 		{ "service_context_id_mnc", STR_PARAM,			&ro_service_context_id_mnc_s 	},
 		{ "service_context_id_mcc", STR_PARAM,			&ro_service_context_id_mcc_s 	},
 		{ "service_context_id_release",	STR_PARAM, 		&ro_service_context_id_release_s},
-		{ 0, 0, 0 }
+        { "service_parameter_type_caller",	INT_PARAM,			&service_parameter_type_caller		},
+        { "service_parameter_type_called",	INT_PARAM,			&service_parameter_type_called		},
+        { "service_parameter_type_mtmo",	INT_PARAM,			&service_parameter_type_mtmo		},
+        { "service_parameter_type_location_type",	INT_PARAM,			&service_parameter_type_location_type		},
+        { "service_parameter_type_location",	INT_PARAM,			&service_parameter_type_location		},
+        { "service_parameter_type_routing_case",	INT_PARAM,			&service_parameter_type_routing_case		},
+        { 0, 0, 0 }
 };
 
 stat_export_t charging_stats[] = {
@@ -204,6 +216,13 @@ int fix_parameters() {
 		LM_ERR("fix_parameters: error while creating service_context_id\n");
 		return 0;
 	}
+
+    cfg.service_parameter_type_caller = service_parameter_type_caller;
+    cfg.service_parameter_type_called = service_parameter_type_called;
+    cfg.service_parameter_type_mtmo = service_parameter_type_mtmo;
+    cfg.service_parameter_type_location_type = service_parameter_type_location_type;
+    cfg.service_parameter_type_location = service_parameter_type_location;
+    cfg.service_parameter_type_routing_case = service_parameter_type_routing_case;
 
 	return 1;
 }

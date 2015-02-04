@@ -16,6 +16,12 @@ typedef struct {
     str msc_address;
     str vlr_location;
     str * service_context_id;
+    uint32_t service_parameter_type_caller;
+    uint32_t service_parameter_type_called;
+    uint32_t service_parameter_type_mtmo;
+    uint32_t service_parameter_type_location_type;
+    uint32_t service_parameter_type_location;
+    uint32_t service_parameter_type_routing_case;
 } client_ro_cfg;
 
 #endif
