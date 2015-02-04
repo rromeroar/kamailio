@@ -293,6 +293,25 @@ inline int Ro_add_multiple_service_credit_Control(AAAMessage *msg, unsigned int 
     return Ro_add_avp(msg, group.s, group.len, AVP_Multiple_Services_Credit_Control, AAA_AVP_FLAG_MANDATORY, 0, AVP_FREE_DATA, __FUNCTION__);
 }
 
+inline int Ro_add_service_parameter_info(AAAMessage *msg, unsigned int type, str value) {
+    char x[4];
+    AAA_AVP_LIST spi_pair;
+    str group;
+
+    spi_pair.head = 0;
+    spi_pair.tail = 0;
+
+    set_4bytes(x, type);
+    Ro_add_avp_list(&spi_pair, x, 4, AVP_Service_Parameter_Type, AAA_AVP_FLAG_MANDATORY, 0, AVP_DUPLICATE_DATA, __FUNCTION__);
+
+    Ro_add_avp_list(&spi_pair, value.s, value.len, AVP_Service_Parameter_Value, AAA_AVP_FLAG_MANDATORY, 0, AVP_DUPLICATE_DATA, __FUNCTION__);
+
+    group = cdpb.AAAGroupAVPS(spi_pair);
+    cdpb.AAAFreeAVPList(&spi_pair);
+
+    return Ro_add_avp(msg, group.s, group.len, AVP_Service_Parameter_Info, AAA_AVP_FLAG_MANDATORY, 0, AVP_DUPLICATE_DATA, __FUNCTION__);
+}
+
 inline int Ro_add_multiple_services_indicator(AAAMessage *msg, AVP_Multiple_Services_Indicator_t indicator_value) {
     char x[4];
     str s = {x, 4};
@@ -1043,6 +1062,14 @@ int Ro_Send_CCR(struct sip_msg *msg, str* direction, str* charge_type, str* unit
 
     if (!Ro_add_multiple_service_credit_Control(ccr, reservation_units, -1)) {
         LM_ERR("Problem adding Multiple Service Credit Control data\n");
+        goto error;
+    }
+
+    str location = {0,0};
+    location.s	= "34111111111";
+    location.len	= sizeof("34111111111") - 1;
+    if (!Ro_add_service_parameter_info(ccr, 5, location)) {
+        LM_ERR("Problem adding Service Parameter Info data\n");
         goto error;
     }
 
