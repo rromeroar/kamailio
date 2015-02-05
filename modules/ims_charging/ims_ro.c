@@ -1043,8 +1043,8 @@ int Ro_Send_CCR(struct sip_msg *msg, str* direction, str* charge_type, str* unit
     if (!(ccr = Ro_new_ccr(cc_acc_session, ro_ccr_data)))
         goto error;
 
-    if (!Ro_add_vendor_specific_appid(ccr, IMS_vendor_id_3GPP, IMS_Ro, 0)) {
-        LM_ERR("Problem adding Vendor specific ID\n");
+    if (!Ro_add_auth_appid(ccr, IMS_Ro)) {
+        LM_ERR("Problem adding Auth-Application-Id\n");
         goto error;
     }
 
