@@ -29,6 +29,7 @@
 #include "config.h"
 #include "ro_session_hash.h"
 #include "stats.h"
+#include "../dialog/dlg_hash.h"
 
 extern struct tm_binds tmb;
 extern struct cdp_binds cdpb;
@@ -974,11 +975,14 @@ error:
 int Ro_Send_CCR(struct sip_msg *msg, str* direction, str* charge_type, str* unit_type, int reservation_units,
 						cfg_action_t* action, unsigned int tindex, unsigned int tlabel) {
 	str session_id = { 0, 0 },
-		asserted_id_uri	= { 0, 0 };
+		asserted_id_uri	= { 0, 0 },
+        caller_msisdn	= { 0, 0 },
+        called_msisdn	= { 0, 0 };
 	AAASession* cc_acc_session = NULL;
     Ro_CCR_t * ro_ccr_data = 0;
     AAAMessage * ccr = 0;
     int dir = 0;
+    struct sip_uri from, to;
     struct ro_session *new_session = 0;
     struct session_setup_data *ssd = shm_malloc(sizeof(struct session_setup_data)); // lookup structure used to load session info from cdp callback on CCA
 
@@ -1074,6 +1078,30 @@ int Ro_Send_CCR(struct sip_msg *msg, str* direction, str* charge_type, str* unit
 
     if (!Ro_add_multiple_service_credit_Control(ccr, reservation_units, -1)) {
         LM_ERR("Problem adding Multiple Service Credit Control data\n");
+        goto error;
+    }
+
+    if (parse_uri(get_from(msg)->uri.s, get_from(msg)->uri.len, &from)<0) {
+        LM_ERR("Problem parsing from header\n");
+        goto error;
+    }
+    caller_msisdn.s = from.user.s;
+    caller_msisdn.len = from.user.len;
+    if (cfg.service_parameter_type_caller != 0 &&
+            !Ro_add_service_parameter_info_str(ccr, cfg.service_parameter_type_caller, caller_msisdn)) {
+                LM_ERR("Problem adding Service Parameter Info data for caller\n");
+        goto error;
+    }
+
+    if (parse_uri(get_to(msg)->uri.s, get_to(msg)->uri.len, &to)<0) {
+        LM_ERR("Problem parsing to header\n");
+        goto error;
+    }
+    called_msisdn.s = to.user.s;
+    called_msisdn.len = to.user.len;
+    if (cfg.service_parameter_type_called != 0 &&
+            !Ro_add_service_parameter_info_str(ccr, cfg.service_parameter_type_called, called_msisdn)) {
+                LM_ERR("Problem adding Service Parameter Info data for called\n");
         goto error;
     }
 
