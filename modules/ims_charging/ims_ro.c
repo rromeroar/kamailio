@@ -390,6 +390,12 @@ inline int Ro_add_vendor_specific_appid(AAAMessage *msg, unsigned int vendor_id,
     return Ro_add_avp(msg, group.s, group.len, AVP_Vendor_Specific_Application_Id, AAA_AVP_FLAG_MANDATORY, 0, AVP_FREE_DATA, __FUNCTION__);
 }
 
+inline int Ro_add_auth_appid(AAAMessage *msg, unsigned int auth_id) {
+    char x[4];
+    set_4bytes(x, auth_id);
+    return Ro_add_avp(msg, x, 4, AVP_Auth_Application_Id, AAA_AVP_FLAG_MANDATORY, 0, AVP_DUPLICATE_DATA, __FUNCTION__);
+}
+
 int get_sip_header_info(struct sip_msg * req,
         struct sip_msg * reply,
         int32_t * acc_record_type,
