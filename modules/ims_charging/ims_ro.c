@@ -293,7 +293,19 @@ inline int Ro_add_multiple_service_credit_Control(AAAMessage *msg, unsigned int 
     return Ro_add_avp(msg, group.s, group.len, AVP_Multiple_Services_Credit_Control, AAA_AVP_FLAG_MANDATORY, 0, AVP_FREE_DATA, __FUNCTION__);
 }
 
-inline int Ro_add_service_parameter_info(AAAMessage *msg, unsigned int type, str value) {
+inline int Ro_add_service_parameter_info_str(AAAMessage *msg, unsigned int type, str value) {
+    return Ro_add_service_parameter_info(msg, type, value.s, value.len);
+}
+
+
+inline int Ro_add_service_parameter_info_uint(AAAMessage *msg, unsigned int type, unsigned int value) {
+    char x[4];
+    set_4bytes(x, value);
+    return Ro_add_service_parameter_info(msg, type, x, 4);
+}
+
+
+inline int Ro_add_service_parameter_info(AAAMessage *msg, unsigned int type, char *data, int len) {
     char x[4];
     AAA_AVP_LIST spi_pair;
     str group;
@@ -304,7 +316,7 @@ inline int Ro_add_service_parameter_info(AAAMessage *msg, unsigned int type, str
     set_4bytes(x, type);
     Ro_add_avp_list(&spi_pair, x, 4, AVP_Service_Parameter_Type, AAA_AVP_FLAG_MANDATORY, 0, AVP_DUPLICATE_DATA, __FUNCTION__);
 
-    Ro_add_avp_list(&spi_pair, value.s, value.len, AVP_Service_Parameter_Value, AAA_AVP_FLAG_MANDATORY, 0, AVP_DUPLICATE_DATA, __FUNCTION__);
+    Ro_add_avp_list(&spi_pair, data, len, AVP_Service_Parameter_Value, AAA_AVP_FLAG_MANDATORY, 0, AVP_DUPLICATE_DATA, __FUNCTION__);
 
     group = cdpb.AAAGroupAVPS(spi_pair);
     cdpb.AAAFreeAVPList(&spi_pair);
@@ -1065,11 +1077,28 @@ int Ro_Send_CCR(struct sip_msg *msg, str* direction, str* charge_type, str* unit
         goto error;
     }
 
-    str location = {0,0};
-    location.s	= "34111111111";
-    location.len	= sizeof("34111111111") - 1;
-    if (!Ro_add_service_parameter_info(ccr, 5, location)) {
-        LM_ERR("Problem adding Service Parameter Info data\n");
+    unsigned int service_parameter_value_mtmo = 0; // 0 for outgoing
+    if (cfg.service_parameter_type_mtmo != 0 &&
+            !Ro_add_service_parameter_info_uint(ccr, cfg.service_parameter_type_mtmo, service_parameter_value_mtmo)) {
+                LM_ERR("Problem adding Service Parameter Info data for mtmo\n");
+        goto error;
+    }
+
+    if (cfg.service_parameter_type_location_type != 0 &&
+            !Ro_add_service_parameter_info_uint(ccr, cfg.service_parameter_type_location_type, cfg.service_parameter_value_location_type)) {
+                LM_ERR("Problem adding Service Parameter Info data for location type\n");
+        goto error;
+    }
+
+    if (cfg.service_parameter_type_location != 0 &&
+            !Ro_add_service_parameter_info_str(ccr, cfg.service_parameter_type_location, cfg.service_parameter_value_location)) {
+        LM_ERR("Problem adding Service Parameter Info data for location\n");
+        goto error;
+    }
+
+    if (cfg.service_parameter_type_routing_case != 0 &&
+            !Ro_add_service_parameter_info_uint(ccr, cfg.service_parameter_type_routing_case, cfg.service_parameter_value_routing_case)) {
+                LM_ERR("Problem adding Service Parameter Info data for routing case\n");
         goto error;
     }
 
