@@ -25,6 +25,8 @@ typedef struct {
     uint32_t service_parameter_value_location_type;
     str service_parameter_value_location;
     uint32_t service_parameter_value_routing_case;
+    uint32_t service_identifier;
+    uint32_t rating_group;
 } client_ro_cfg;
 
 #endif

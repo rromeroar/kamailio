@@ -47,6 +47,8 @@ int service_parameter_type_routing_case = 6;
 int service_parameter_value_location_type = 1;
 char* service_parameter_value_location_s = "34111111111";
 int service_parameter_value_routing_case = 1;
+int service_identifier = 0; //1000
+int rating_group = 1;
 client_ro_cfg cfg;
 
 struct cdp_binds cdpb;
@@ -123,6 +125,8 @@ static param_export_t params[] = {
         { "service_parameter_value_location_type",	INT_PARAM,			&service_parameter_value_location_type		},
         { "service_parameter_value_location",	STR_PARAM,			&service_parameter_value_location_s		},
         { "service_parameter_value_routing_case",	INT_PARAM,			&service_parameter_value_routing_case		},
+        { "service_identifier",	INT_PARAM,			&service_identifier		},
+        { "rating_group",	INT_PARAM,			&rating_group		},
         { 0, 0, 0 }
 };
 
@@ -234,6 +238,9 @@ int fix_parameters() {
     cfg.service_parameter_value_location.s = service_parameter_value_location_s;
     cfg.service_parameter_value_location.len = strlen(service_parameter_value_location_s);
     cfg.service_parameter_value_routing_case = service_parameter_value_routing_case;
+
+    cfg.service_identifier = service_identifier;
+    cfg.rating_group = rating_group;
 
 	return 1;
 }

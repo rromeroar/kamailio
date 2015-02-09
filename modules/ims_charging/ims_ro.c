@@ -226,12 +226,10 @@ inline int Ro_add_call_disconnect_reason(AAAMessage *msg, AVP_Call_Disconnect_Re
 }
 
 /* called only when building stop record AVPS */
-inline int Ro_add_multiple_service_credit_Control_stop(AAAMessage *msg, int used_unit) {
+inline int Ro_add_multiple_service_credit_Control_stop(AAAMessage *msg, int used_unit, int active_rating_group, int active_service_identifier) {
     AAA_AVP_LIST used_list, mscc_list;
     str used_group;
     char x[4];
-
-    unsigned int service_id = 1000; //VOICE TODO FIX as config item
 
     used_list.head = 0;
     used_list.tail = 0;
@@ -247,8 +245,15 @@ inline int Ro_add_multiple_service_credit_Control_stop(AAAMessage *msg, int used
         Ro_add_avp_list(&mscc_list, used_group.s, used_group.len, AVP_Used_Service_Unit, AAA_AVP_FLAG_MANDATORY, 0, AVP_FREE_DATA, __FUNCTION__);
     }
 
-    set_4bytes(x, service_id);
-    Ro_add_avp_list(&mscc_list, x, 4, AVP_Service_Identifier, AAA_AVP_FLAG_MANDATORY, 0, AVP_DUPLICATE_DATA, __FUNCTION__);
+    if (active_service_identifier > 0) {
+        set_4bytes(x, active_service_identifier);
+        Ro_add_avp_list(&mscc_list, x, 4, AVP_Service_Identifier, AAA_AVP_FLAG_MANDATORY, 0, AVP_DUPLICATE_DATA, __FUNCTION__);
+    }
+
+    if (active_rating_group > 0) {
+        set_4bytes(x, active_rating_group);
+        Ro_add_avp_list(&mscc_list, x, 4, AVP_Rating_Group, AAA_AVP_FLAG_MANDATORY, 0, AVP_DUPLICATE_DATA, __FUNCTION__);
+    }
 
     used_group = cdpb.AAAGroupAVPS(mscc_list);
     cdpb.AAAFreeAVPList(&mscc_list);
@@ -888,7 +893,7 @@ void send_ccr_stop(struct ro_session *ro_session) {
         LM_ERR("Problem adding Multiple-Services-Indicator data\n");
     }
     
-    if (!Ro_add_multiple_service_credit_Control_stop(ccr, used)) {
+    if (!Ro_add_multiple_service_credit_Control_stop(ccr, used, cfg.rating_group, cfg.service_identifier)) {
         LM_ERR("Problem adding Multiple Service Credit Control data\n");
     }
     
