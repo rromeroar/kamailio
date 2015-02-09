@@ -261,10 +261,9 @@ inline int Ro_add_multiple_service_credit_Control_stop(AAAMessage *msg, int used
     return Ro_add_avp(msg, used_group.s, used_group.len, AVP_Multiple_Services_Credit_Control, AAA_AVP_FLAG_MANDATORY, 0, AVP_FREE_DATA, __FUNCTION__);
 }
 
-inline int Ro_add_multiple_service_credit_Control(AAAMessage *msg, unsigned int requested_unit, int used_unit) {
+inline int Ro_add_multiple_service_credit_Control(AAAMessage *msg, unsigned int requested_unit, int used_unit, int rating_group, int service_identifier) {
     AAA_AVP_LIST list, used_list, mscc_list;
     str group, used_group;
-    unsigned int service_id = 1000; //VOICE TODO FIX as config item - should be a MAP that can be identified based on SDP params
     char x[4];
 
     list.head = 0;
@@ -281,8 +280,15 @@ inline int Ro_add_multiple_service_credit_Control(AAAMessage *msg, unsigned int 
 
     Ro_add_avp_list(&mscc_list, group.s, group.len, AVP_Requested_Service_Unit, AAA_AVP_FLAG_MANDATORY, 0, AVP_FREE_DATA, __FUNCTION__);
 
-    set_4bytes(x, service_id);
-    Ro_add_avp_list(&mscc_list, x, 4, AVP_Service_Identifier, AAA_AVP_FLAG_MANDATORY, 0, AVP_DUPLICATE_DATA, __FUNCTION__);
+    if (service_identifier > 0) {
+        set_4bytes(x, service_identifier);
+        Ro_add_avp_list(&mscc_list, x, 4, AVP_Service_Identifier, AAA_AVP_FLAG_MANDATORY, 0, AVP_DUPLICATE_DATA, __FUNCTION__);
+    }
+
+    if (rating_group > 0) {
+        set_4bytes(x, rating_group);
+        Ro_add_avp_list(&mscc_list, x, 4, AVP_Rating_Group, AAA_AVP_FLAG_MANDATORY, 0, AVP_DUPLICATE_DATA, __FUNCTION__);
+    }
 
     /* if we must Used-Service-Unit */
     if (used_unit >= 0) {
@@ -684,7 +690,7 @@ void send_ccr_interim(struct ro_session* ro_session, unsigned int used, unsigned
         LM_ERR("Problem adding Multiple-Services-Indicator data\n");
     }
 
-    if (!Ro_add_multiple_service_credit_Control(ccr, interim_request_credits/*INTERIM_CREDIT_REQ_AMOUNT*/, used)) {
+    if (!Ro_add_multiple_service_credit_Control(ccr, interim_request_credits/*INTERIM_CREDIT_REQ_AMOUNT*/, used, cfg.rating_group, cfg.service_identifier)) {
         LM_ERR("Problem adding Multiple Service Credit Control data\n");
     }
 
@@ -1087,7 +1093,7 @@ int Ro_Send_CCR(struct sip_msg *msg, str* direction, str* charge_type, str* unit
         LM_ERR("Problem adding Multiple-Services-Indicator data\n");
     }
 
-    if (!Ro_add_multiple_service_credit_Control(ccr, reservation_units, -1)) {
+    if (!Ro_add_multiple_service_credit_Control(ccr, reservation_units, -1, cfg.rating_group, cfg.service_identifier)) {
         LM_ERR("Problem adding Multiple Service Credit Control data\n");
         goto error;
     }
