@@ -874,8 +874,8 @@ void send_ccr_stop(struct ro_session *ro_session) {
 
     LM_DBG("Created new CCR\n");
 
-    if (!Ro_add_vendor_specific_appid(ccr, IMS_vendor_id_3GPP, IMS_Ro, 0)) {
-        LM_ERR("Problem adding Vendor specific ID\n");
+    if (!Ro_add_auth_appid(ccr, IMS_Ro)) {
+        LM_ERR("Problem adding Auth Application ID\n");
     }
    
     ro_session->hop_by_hop += 1;
