@@ -667,8 +667,8 @@ void send_ccr_interim(struct ro_session* ro_session, unsigned int used, unsigned
     if (!(ccr = Ro_new_ccr(auth, ro_ccr_data)))
         goto error;
 
-    if (!Ro_add_vendor_specific_appid(ccr, IMS_vendor_id_3GPP, IMS_Ro, 0/*acct id*/)) {
-        LM_ERR("Problem adding Vendor specific ID\n");
+    if (!Ro_add_auth_appid(ccr, IMS_Ro)) {
+        LM_ERR("Problem adding Auth Application ID\n");
     }
     ro_session->hop_by_hop += 1;
     if (!Ro_add_cc_request(ccr, RO_CC_INTERIM, ro_session->hop_by_hop)) {
