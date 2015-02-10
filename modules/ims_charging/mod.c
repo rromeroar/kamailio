@@ -38,17 +38,17 @@ static int ro_session_hash_size = 4096;
 int ro_timer_buffer = 5;
 int interim_request_credits = 30;
 int default_validity_time = 0;
-int service_parameter_type_caller = 1;
-int service_parameter_type_called = 2;
-int service_parameter_type_mtmo = 3;
-int service_parameter_type_location_type = 4;
-int service_parameter_type_location = 5;
-int service_parameter_type_routing_case = 6;
+int service_parameter_type_caller = 0; // 0 = not used
+int service_parameter_type_called = 0; // 0 = not used
+int service_parameter_type_mtmo = 0; // 0 = not used
+int service_parameter_type_location_type = 0; // 0 = not used
+int service_parameter_type_location = 0; // 0 = not used
+int service_parameter_type_routing_case = 0; // 0 = not used
 int service_parameter_value_location_type = 1;
 char* service_parameter_value_location_s = "34111111111";
 int service_parameter_value_routing_case = 1;
-int service_identifier = 0; //1000
-int rating_group = 1;
+int service_identifier = 1000;
+int rating_group = 0; // 0 = no rating group
 client_ro_cfg cfg;
 
 struct cdp_binds cdpb;
