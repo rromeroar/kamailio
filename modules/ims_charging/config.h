@@ -3,7 +3,8 @@
 
 typedef enum {
     RO_MODE_3GPP = 0,
-    RO_MODE_SYMSOFT = 1
+    RO_MODE_SYMSOFT = 1,
+    RO_MODE_RFC_4006 = 2
 } ro_ccr_mode_t;
 
 typedef struct {

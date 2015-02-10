@@ -667,9 +667,16 @@ void send_ccr_interim(struct ro_session* ro_session, unsigned int used, unsigned
     if (!(ccr = Ro_new_ccr(auth, ro_ccr_data)))
         goto error;
 
-    if (!Ro_add_auth_appid(ccr, IMS_Ro)) {
-        LM_ERR("Problem adding Auth Application ID\n");
+    if (cfg.mode == RO_MODE_RFC_4006) {
+        if (!Ro_add_auth_appid(ccr, IMS_Ro)) {
+                    LM_ERR("Problem adding Auth-Application-Id\n");
+        }
+    } else {
+        if (!Ro_add_vendor_specific_appid(ccr, IMS_vendor_id_3GPP, IMS_Ro, 0/*acct id*/)) {
+                    LM_ERR("Problem adding Vendor specific ID\n");
+        }
     }
+
     ro_session->hop_by_hop += 1;
     if (!Ro_add_cc_request(ccr, RO_CC_INTERIM, ro_session->hop_by_hop)) {
         LM_ERR("Problem adding CC-Request data\n");
@@ -874,8 +881,14 @@ void send_ccr_stop(struct ro_session *ro_session) {
 
     LM_DBG("Created new CCR\n");
 
-    if (!Ro_add_auth_appid(ccr, IMS_Ro)) {
-        LM_ERR("Problem adding Auth Application ID\n");
+    if (cfg.mode == RO_MODE_RFC_4006) {
+        if (!Ro_add_auth_appid(ccr, IMS_Ro)) {
+                    LM_ERR("Problem adding Auth-Application-Id\n");
+        }
+    } else {
+        if (!Ro_add_vendor_specific_appid(ccr, IMS_vendor_id_3GPP, IMS_Ro, 0/*acct id*/)) {
+                    LM_ERR("Problem adding Vendor specific ID\n");
+        }
     }
    
     ro_session->hop_by_hop += 1;
@@ -1054,9 +1067,16 @@ int Ro_Send_CCR(struct sip_msg *msg, str* direction, str* charge_type, str* unit
     if (!(ccr = Ro_new_ccr(cc_acc_session, ro_ccr_data)))
         goto error;
 
-    if (!Ro_add_auth_appid(ccr, IMS_Ro)) {
-        LM_ERR("Problem adding Auth-Application-Id\n");
-        goto error;
+    if (cfg.mode == RO_MODE_RFC_4006) {
+        if (!Ro_add_auth_appid(ccr, IMS_Ro)) {
+                    LM_ERR("Problem adding Auth-Application-Id\n");
+            goto error;
+        }
+    } else {
+        if (!Ro_add_vendor_specific_appid(ccr, IMS_vendor_id_3GPP, IMS_Ro, 0/*acct id*/)) {
+                    LM_ERR("Problem adding Vendor specific ID\n");
+            goto error;
+        }
     }
 
     if (!Ro_add_cc_request(ccr, cc_event_type, cc_event_number)) {
