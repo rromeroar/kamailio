@@ -22,7 +22,7 @@
 MODULE_VERSION
 
 /* parameters */
-int ro_ccr_mode = 2; // 3GPP
+int ro_ccr_mode = 0; // 3GPP
 char* ro_origin_host_s = "scscf.ims.smilecoms.com";
 char* ro_origin_realm_s = "ims.smilecoms.com";
 char* ro_destination_realm_s = "ims.smilecoms.com";
